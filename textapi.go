@@ -24,6 +24,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -37,11 +38,19 @@ type Auth struct {
 	ApplicationKey string
 }
 
+type RateLimits struct {
+	Limit     int
+	Remaining int
+	Reset     int
+}
+
 // A Client can make calls to the Text API.
 type Client struct {
 	auth           Auth
 	useHttps       bool
 	apiHostAndPath string
+
+	RateLimits *RateLimits
 }
 
 // An Error is the JSON response whenever an error occurs.
@@ -59,6 +68,7 @@ func NewClient(auth Auth, useHttps bool) (*Client, error) {
 		auth:           auth,
 		useHttps:       useHttps,
 		apiHostAndPath: "api.aylien.com/api/v1",
+		RateLimits:     &RateLimits{},
 	}
 
 	return client, nil
@@ -132,6 +142,10 @@ func (c *Client) do(req *http.Request, v interface{}) error {
 			return errors.New(e.Message)
 		}
 	}
+
+	c.RateLimits.Limit, _ = strconv.Atoi(res.Header.Get("X-RateLimit-Limit"))
+	c.RateLimits.Reset, _ = strconv.Atoi(res.Header.Get("X-RateLimit-Reset"))
+	c.RateLimits.Remaining, _ = strconv.Atoi(res.Header.Get("X-RateLimit-Remaining"))
 
 	if v != nil {
 		err = json.Unmarshal(resBody, v)

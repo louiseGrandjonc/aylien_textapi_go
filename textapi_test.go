@@ -64,6 +64,9 @@ func init() {
 			case "/sentiment":
 				bytes, _ = json.Marshal(SentimentResponse{})
 			case "/language":
+				w.Header().Add("X-RateLimit-Limit", "1000")
+				w.Header().Add("X-RateLimit-Reset", "1420479141")
+				w.Header().Add("X-RateLimit-Remaining", "999")
 				bytes, _ = json.Marshal(LanguageResponse{})
 			case "/related":
 				bytes, _ = json.Marshal(RelatedResponse{})
@@ -124,6 +127,9 @@ func TestLanguage(t *testing.T) {
 	_, err = client.Language(params)
 	if err != nil {
 		t.Error(err)
+	}
+	if client.RateLimits.Limit != 1000 || client.RateLimits.Remaining != 999 || client.RateLimits.Reset != 1420479141 {
+		t.Error("invalid ratelimits")
 	}
 }
 
