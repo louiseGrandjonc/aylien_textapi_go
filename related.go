@@ -47,7 +47,7 @@ func (c *Client) Related(params *RelatedParams) (*RelatedResponse, error) {
 	if len(params.Phrase) > 0 {
 		body.Add("phrase", params.Phrase)
 	} else {
-		return nil, errors.New("You must provide a phrase")
+		return nil, errors.New("you must provide a phrase")
 	}
 
 	if params.Count > 0 {

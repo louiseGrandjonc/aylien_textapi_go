@@ -44,7 +44,7 @@ func (c *Client) Language(params *LanguageParams) (*LanguageResponse, error) {
 	} else if len(params.URL) > 0 {
 		body.Add("url", params.URL)
 	} else {
-		return nil, errors.New("You must either provide url or text")
+		return nil, errors.New("you must either provide url or text")
 	}
 
 	language := &LanguageResponse{}

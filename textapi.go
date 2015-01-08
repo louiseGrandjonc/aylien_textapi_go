@@ -31,6 +31,8 @@ import (
 // version is SDK's version.
 const version = "0.1.0"
 
+// An Auth is an authentication token that will be used to
+// authenticate client.
 type Auth struct {
 	// ApplicationID and ApplicationKey identify the client using Text API.
 	// These fields are always required
@@ -38,6 +40,7 @@ type Auth struct {
 	ApplicationKey string
 }
 
+// A RateLimits is the HTTP X-RateLimit-* headers of last response.
 type RateLimits struct {
 	Limit     int
 	Remaining int
@@ -47,7 +50,7 @@ type RateLimits struct {
 // A Client can make calls to the Text API.
 type Client struct {
 	auth           Auth
-	useHttps       bool
+	useHTTPS       bool
 	apiHostAndPath string
 
 	RateLimits *RateLimits
@@ -60,13 +63,13 @@ type Error struct {
 
 // NewClient returns a new client using the given auth information.
 // To use HTTPS, pas useHttps = true.
-func NewClient(auth Auth, useHttps bool) (*Client, error) {
+func NewClient(auth Auth, useHTTPS bool) (*Client, error) {
 	if len(auth.ApplicationID) == 0 || len(auth.ApplicationKey) == 0 {
-		return nil, errors.New("Empty!")
+		return nil, errors.New("invalid application ID or application key")
 	}
 	client := &Client{
 		auth:           auth,
-		useHttps:       useHttps,
+		useHTTPS:       useHTTPS,
 		apiHostAndPath: "api.aylien.com/api/v1",
 		RateLimits:     &RateLimits{},
 	}
@@ -93,7 +96,7 @@ func (c *Client) newRequest(path string, form *url.Values) (*http.Request, error
 	}
 
 	protocol := "http"
-	if c.useHttps {
+	if c.useHTTPS {
 		protocol = "https"
 	}
 
@@ -138,9 +141,9 @@ func (c *Client) do(req *http.Request, v interface{}) error {
 		var e Error
 		if err = json.Unmarshal(resBody, &e); err != nil {
 			return errors.New(string(resBody))
-		} else {
-			return errors.New(e.Message)
 		}
+
+		return errors.New(e.Message)
 	}
 
 	c.RateLimits.Limit, _ = strconv.Atoi(res.Header.Get("X-RateLimit-Limit"))
@@ -150,7 +153,7 @@ func (c *Client) do(req *http.Request, v interface{}) error {
 	if v != nil {
 		err = json.Unmarshal(resBody, v)
 		if err != nil {
-			return errors.New("Invalid response")
+			return errors.New("invalid response")
 		}
 
 		return nil

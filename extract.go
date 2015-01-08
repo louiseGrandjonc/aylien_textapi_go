@@ -50,7 +50,7 @@ func (c *Client) Extract(params *ExtractParams) (*ExtractResponse, error) {
 	} else if len(params.URL) > 0 {
 		body.Add("url", params.URL)
 	} else {
-		return nil, errors.New("You must either provide url or html")
+		return nil, errors.New("you must either provide url or html")
 	}
 
 	if params.BestImage {

@@ -56,7 +56,7 @@ func (c *Client) Summarize(params *SummarizeParams) (*SummarizeResponse, error) 
 		body.Add("title", params.Title)
 		body.Add("text", params.Text)
 	} else {
-		return nil, errors.New("You must either provide url or a pair of text and title")
+		return nil, errors.New("you must either provide url or a pair of text and title")
 	}
 
 	if len(params.Mode) > 0 {

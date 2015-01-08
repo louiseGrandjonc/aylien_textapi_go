@@ -89,7 +89,7 @@ func init() {
 func TestClientCreation(t *testing.T) {
 	auth := Auth{"random", "random"}
 	client, _ := NewClient(auth, true)
-	if !client.useHttps {
+	if !client.useHTTPS {
 		t.Error("must be using HTTPS")
 	}
 }

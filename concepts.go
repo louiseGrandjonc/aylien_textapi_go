@@ -62,7 +62,7 @@ func (c *Client) Concepts(params *ConceptsParams) (*ConceptsResponse, error) {
 	} else if len(params.URL) > 0 {
 		body.Add("url", params.URL)
 	} else {
-		return nil, errors.New("You must either provide url or text")
+		return nil, errors.New("you must either provide url or text")
 	}
 
 	if len(params.Language) > 0 {
