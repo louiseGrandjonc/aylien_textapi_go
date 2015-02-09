@@ -80,6 +80,8 @@ func init() {
 				} else {
 					bytes, _ = json.Marshal(SummarizeResponse{})
 				}
+			case "/microformats":
+				bytes, _ = json.Marshal(MicroformatsResponse{})
 			}
 			fmt.Fprintln(w, string(bytes))
 		}
@@ -250,6 +252,19 @@ func TestUnsupervisedClassification(t *testing.T) {
 	}
 	params.Classes = []string{"android", "ios"}
 	_, err = client.UnsupervisedClassify(params)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestMicroformats(t *testing.T) {
+	params := &MicroformatsParams{}
+	_, err := client.Microformats(params)
+	if err == nil {
+		t.Error("did not return error")
+	}
+	params.URL = "http://aylien.com/"
+	_, err = client.Microformats(params)
 	if err != nil {
 		t.Error(err)
 	}

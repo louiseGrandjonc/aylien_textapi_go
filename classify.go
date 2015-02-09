@@ -98,7 +98,7 @@ func (c *Client) Classify(params *ClassifyParams) (*ClassifyResponse, error) {
 	return classification, err
 }
 
-// UnsupervisedClassify picks the most semantically relevant class label or tag for a piece of text.
+// UnsupervisedClassify picks the most semantically relevant class label or tag for the document defined by the given params information.
 func (c *Client) UnsupervisedClassify(params *UnsupervisedClassifyParams) (*UnsupervisedClassifyResponse, error) {
 	body := &url.Values{}
 
