@@ -51,6 +51,8 @@ func init() {
 				bytes, _ = json.Marshal(ConceptsResponse{})
 			case "/classify":
 				bytes, _ = json.Marshal(ClassifyResponse{})
+			case "/classify/unsupervised":
+				bytes, _ = json.Marshal(UnsupervisedClassifyResponse{})
 			case "/entities":
 				url := r.FormValue("url")
 				if url == "invalid" {
@@ -230,6 +232,24 @@ func TestSummarize(t *testing.T) {
 	}
 	params.Text = "text"
 	_, err = client.Summarize(params)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestUnsupervisedClassification(t *testing.T) {
+	params := &UnsupervisedClassifyParams{}
+	_, err := client.UnsupervisedClassify(params)
+	if err == nil {
+		t.Error("did not return error")
+	}
+	params.Text = "Samsung Galaxy S II"
+	_, err = client.UnsupervisedClassify(params)
+	if err == nil {
+		t.Error("did not return error")
+	}
+	params.Classes = []string{"android", "ios"}
+	_, err = client.UnsupervisedClassify(params)
 	if err != nil {
 		t.Error(err)
 	}
