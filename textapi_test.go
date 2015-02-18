@@ -82,6 +82,8 @@ func init() {
 				}
 			case "/microformats":
 				bytes, _ = json.Marshal(MicroformatsResponse{})
+			case "/image-tags":
+				bytes, _ = json.Marshal(ImageTagsResponse{})
 			}
 			fmt.Fprintln(w, string(bytes))
 		}
@@ -265,6 +267,19 @@ func TestMicroformats(t *testing.T) {
 	}
 	params.URL = "http://aylien.com/"
 	_, err = client.Microformats(params)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestImageTags(t *testing.T) {
+	params := &ImageTagsParams{}
+	_, err := client.ImageTags(params)
+	if err == nil {
+		t.Error("did not return error")
+	}
+	params.URL = "https://developer.aylien.com/images/logo-small.png"
+	_, err = client.ImageTags(params)
 	if err != nil {
 		t.Error(err)
 	}
