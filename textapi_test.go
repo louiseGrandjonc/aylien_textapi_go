@@ -53,6 +53,8 @@ func init() {
 				bytes, _ = json.Marshal(ClassifyResponse{})
 			case "/classify/unsupervised":
 				bytes, _ = json.Marshal(UnsupervisedClassifyResponse{})
+			case "/classify/iab-qag":
+				bytes, _ = json.Marshal(ClassifyByTaxonomyResponse{})
 			case "/entities":
 				url := r.FormValue("url")
 				if url == "invalid" {
@@ -280,6 +282,24 @@ func TestImageTags(t *testing.T) {
 	}
 	params.URL = "https://developer.aylien.com/images/logo-small.png"
 	_, err = client.ImageTags(params)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestClassifyByTaxonomy(t *testing.T) {
+	params := &ClassifyByTaxonomyParams{}
+	_, err := client.ClassifyByTaxonomy(params)
+	if err == nil {
+		t.Error("did not return error")
+	}
+	params.URL = "http://techcrunch.com/2015/07/16/microsoft-will-never-give-up-on-mobile"
+	_, err = client.ClassifyByTaxonomy(params)
+	if err == nil {
+		t.Error("did not return error")
+	}
+	params.Taxonomy = "iab-qag"
+	_, err = client.ClassifyByTaxonomy(params)
 	if err != nil {
 		t.Error(err)
 	}

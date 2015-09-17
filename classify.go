@@ -73,6 +73,37 @@ type UnsupervisedClassifyResponse struct {
 	Classes []UnsupervisedClassifyClass `json:"classes"`
 }
 
+// A ClassifyByTaxonomyParams is the set of parameters that defines a document whose needs to be classified according to a taxonomy.
+type ClassifyByTaxonomyParams struct {
+	// Either URL or Text is required.
+	URL  string
+	Text string
+
+	// Valid languages are en, de, fr, es, it, pt and auto.
+	// Default is en.
+	Language string
+
+	// Valid taxonomies are iab-qag and iptc-subjectcode.
+	Taxonomy string
+}
+
+// A ClassifyByTaxonomyResponse is the JSON description of classification by taxonomy response.
+type ClassifyByTaxonomyResponse struct {
+	Text       string `json:"text"`
+	Language   string `json:"language"`
+	Taxonomy   string `json:"taxonomy"`
+	Categories []struct {
+		Id        string  `json:"id"`
+		Label     string  `json:"label"`
+		Score     float32 `json:"score"`
+		Confident bool    `json:"confident"`
+		Links     []struct {
+			Link string `json:"link"`
+			Rel  string `json:"rel"`
+		} `json:"links"`
+	} `json:"categories"`
+}
+
 // Classify classifies the document defined by the given params information.
 func (c *Client) Classify(params *ClassifyParams) (*ClassifyResponse, error) {
 	body := &url.Values{}
@@ -128,4 +159,34 @@ func (c *Client) UnsupervisedClassify(params *UnsupervisedClassifyParams) (*Unsu
 	}
 
 	return classes, err
+}
+
+// ClassifyByTaxonomy classifies the document defined by the given params information according to the specified taxonomy.
+func (c *Client) ClassifyByTaxonomy(params *ClassifyByTaxonomyParams) (*ClassifyByTaxonomyResponse, error) {
+
+	body := &url.Values{}
+
+	if len(params.Text) > 0 {
+		body.Add("text", params.Text)
+	} else if len(params.URL) > 0 {
+		body.Add("url", params.URL)
+	} else {
+		return nil, errors.New("you must either provide url or text")
+	}
+
+	if len(params.Taxonomy) == 0 {
+		return nil, errors.New("you must specify the taxonomy")
+	}
+
+	if len(params.Language) > 0 {
+		body.Add("language", params.Language)
+	}
+
+	classifications := &ClassifyByTaxonomyResponse{}
+	err := c.call("/classify/"+params.Taxonomy, body, classifications)
+	if err != nil {
+		return nil, err
+	}
+
+	return classifications, err
 }
