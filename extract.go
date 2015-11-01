@@ -29,6 +29,8 @@ type ExtractParams struct {
 
 	// Whether to extract the best image of the article.
 	BestImage bool
+
+	Language string
 }
 
 // ExtractResponse is the JSON description of extract response.
@@ -51,6 +53,10 @@ func (c *Client) Extract(params *ExtractParams) (*ExtractResponse, error) {
 		body.Add("url", params.URL)
 	} else {
 		return nil, errors.New("you must either provide url or html")
+	}
+
+	if len(params.Language) > 0 {
+		body.Add("language", params.Language)
 	}
 
 	if params.BestImage {
